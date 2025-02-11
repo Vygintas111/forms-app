@@ -7,6 +7,10 @@ interface RequestOptions {
     method?: string;
 }
 
+if(!API_URL){
+    throw new Error('VITE_API_URL is not defined in env');
+}
+
 export class ApiCore {
     private async request(endpoint: string, options: RequestOptions = {}) {
         const token = localStorage.getItem('token');
@@ -16,14 +20,16 @@ export class ApiCore {
             ...options.headers,
         };
 
-        const response = await fetch(`${API_URL}${endpoint}`, {
+        const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+        const response = await fetch(`${API_URL}/api${normalizedEndpoint}`, {
             ...options,
             headers,
             body: options.body ? options.body : options.method !== 'GET' ? JSON.stringify(options.data) : undefined
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Request failed'); // Let the caller handle this
+        if (!response.ok) throw new Error(data.error || 'Request failed');
         return data;
     }
 

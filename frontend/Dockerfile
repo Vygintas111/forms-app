@@ -8,6 +8,11 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
+RUN echo "VITE_API_URL is set to: ${VITE_API_URL}"
+
 RUN yarn build
 
 # Use Nginx to serve the built app
